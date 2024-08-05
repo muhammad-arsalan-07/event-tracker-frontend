@@ -9,16 +9,12 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import lockImg from "../assets/lock.jpeg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import apiClient from "../api/axios";
-import { Alert, Snackbar } from "@mui/material";
+import { Bounce, toast } from "react-toastify";
 
 export default function Login() {
-  const [toast, setToast] = React.useState<{
-    open: boolean;
-    status?: "success" | "error";
-    msg?: string;
-  }>();
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -33,43 +29,35 @@ export default function Login() {
         body
       );
       localStorage.setItem("token", res?.data?.token);
-      setToast({
-        open: true,
-        status: "success",
-        msg: "successfully login",
+      toast.success("successfully login", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
       });
+      navigate("/dashboard");
     } catch (error) {
-      setToast({
-        open: true,
-        status: "error",
-        msg: "invalid credentials",
+      toast.error("invalid credentials", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
       });
     }
   };
 
-  const handleClose = () => {
-    setToast({
-      open: false,
-    });
-  };
-
   return (
     <>
-      <Snackbar
-        open={toast?.open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{ horizontal: "right", vertical: "top" }}
-      >
-        <Alert
-          onClose={handleClose}
-          severity={toast?.status}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {toast?.msg}
-        </Alert>
-      </Snackbar>
       <Grid container component="main" sx={{ height: "100vh" }}>
         <CssBaseline />
         <Grid
@@ -118,6 +106,7 @@ export default function Login() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                type="email"
               />
               <TextField
                 margin="normal"

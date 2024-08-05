@@ -1,8 +1,6 @@
 import {
-  Alert,
   Box,
   Grid,
-  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
@@ -12,16 +10,12 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { ProductsResponseType } from "../api/responseType";
 import apiClient from "../api/axios";
+import { Bounce, toast } from "react-toastify";
 
 const Dashboard = () => {
   const [eventsList, setEventsList] = useState<ProductsResponseType>();
   const [searchQuery, setSearchQuery] = useState("");
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const [toast, setToast] = useState<{
-    open: boolean;
-    status?: "success" | "error";
-    msg?: string;
-  }>();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,43 +62,34 @@ const Dashboard = () => {
           authorization: localStorage.getItem("token"),
         },
       });
-      setToast({
-        open: true,
-        status: "success",
-        msg: "event saved successfully",
-      });
+      toast.success('event saved successfully', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+        });
     } catch (error: any) {
-      setToast({
-        open: true,
-        status: "error",
-        msg: error?.response?.data?.message,
+      toast.error(error?.response?.data?.message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
       });
     }
   };
 
-  const handleClose = () => {
-    setToast({
-      open: false,
-    });
-  };
-
   return (
     <>
-      <Snackbar
-        open={toast?.open}
-        autoHideDuration={2000}
-        onClose={handleClose}
-        anchorOrigin={{ horizontal: "center", vertical: "top" }}
-      >
-        <Alert
-          onClose={handleClose}
-          severity={toast?.status}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {toast?.msg}
-        </Alert>
-      </Snackbar>
       <Navbar />
       <Box
         sx={{
